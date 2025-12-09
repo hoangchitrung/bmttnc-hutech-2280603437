@@ -3,3 +3,6 @@ PyQT5
 requests
 rsa>=4.9
 ecdsa
+pycryptodome
+cryptography
+tornado
