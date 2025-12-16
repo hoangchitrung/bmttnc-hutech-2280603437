@@ -26,7 +26,7 @@ class SecurityApp(QMainWindow):
             self.ui.txtInputFile.setText(file_path)
 
             # Suggest file path for output
-            # Example: /home/user/doct.txt -> home/user/encrypted_doc.txt
+            # Example: /home/user/doc.txt -> home/user/encrypted_doc.txt
             folder = os.path.dirname(file_path)
             file_name = os.path.basename(file_path)
             new_name = f"encrypted_{file_name}"
