@@ -64,18 +64,21 @@ state_matrix (sau khi thay thế)
 - **0x00**:
   - Hàng: 0 (Số trước)
   - Cột: 0 (Số sau)
+
 → Vị trí S_Box[0][0] = 0x63
 → Kết quả SubBytes: 63
 
 - **0x44**:
   - Hàng: 4 (Số trước)
   - Cột: 4 (Số sau)
+
 → Vị trí S_Box[4][4] = 0x1B
 → Kết quả SubBytes: 1B
 
 - **0x11**:
   - Hàng: 1 (Số trước)
   - Cột: 1 (Số sau)
+
 → Vị trí S_Box[1][1] = 0x82
 → Kết quả SubBytes: 82
 
@@ -85,27 +88,22 @@ state_matrix (sau khi thay thế)
 - Kết quả: S_box[Hàng][Cột]
 
 **Ví dụ:**
-
+```text
 Đầu vào: 44 (thập phân)
-
-↓
-
+    ↓
 Tạo ma trận trạng thái
-
-↓
-
+    ↓
 Hiển thị ma trận: 0x2C (vì 44 / 16 = 2, 44 % 16 = 12, 12 trong hex là C ⇒ 2C)
-
-↓
-
+    ↓
 SubBytes
-
+```
 - Hàng = 44 // 16 = 2
 - Cột = 44 % 16 = 12
-- S_box[2][12] = 0x71
-       ↓
-- Đầu ra: 0x71
+- S_box[2][12] = 0x71 → Đầu ra: 0x71
 
 **Vì sao chia cho 16?**
 - Vì hex có 16 ký tự (0-9, A-F),
 - S_box là bảng 16×16
+
+**ShiftRows**
+- Là phép toán dùng để dịch mỗi hàng ở trong state matrix sang trái một số vị trí nhất định.
