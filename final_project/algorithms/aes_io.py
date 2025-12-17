@@ -1,6 +1,7 @@
 """Helpers to encrypt/decrypt files/bytes using the project's AES implementation.
 Uses AES-128 ECB mode with PKCS#7 padding. Operates in binary ('rb'/'wb').
 """
+
 from typing import List
 from .aes import aes_encrypt, aes_decrypt
 

@@ -1,5 +1,11 @@
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog, QInputDialog
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QMessageBox,
+    QFileDialog,
+    QInputDialog,
+)
 from ui.DecryptAndEncrypt import Ui_MainWindow
 import sys
 from algorithms.aes_io import encrypt_file, decrypt_file
@@ -48,9 +54,13 @@ class SecurityApp(QMainWindow):
         in_path = self.ui.txtInputFile.text()
         out_path = self.ui.txtOutputFile.text()
         if not in_path or not out_path:
-            QMessageBox.warning(self, "Missing file", "Please choose input and output files first.")
+            QMessageBox.warning(
+                self, "Missing file", "Please choose input and output files first."
+            )
             return
-        key_text, ok = QInputDialog.getText(self, "AES Key", "Enter 16-byte key (hex 32 chars) or 16-char ASCII:")
+        key_text, ok = QInputDialog.getText(
+            self, "AES Key", "Enter 16-byte key (hex 32 chars) or 16-char ASCII:"
+        )
         if not ok:
             return
         key = None
@@ -59,11 +69,13 @@ class SecurityApp(QMainWindow):
             if len(key_text) == 32:
                 key = binascii.unhexlify(key_text)
             elif len(key_text) == 16:
-                key = key_text.encode('utf-8')
+                key = key_text.encode("utf-8")
             else:
                 raise ValueError("Invalid key length")
         except Exception:
-            QMessageBox.critical(self, "Key error", "Key must be 32 hex chars or 16 ASCII chars")
+            QMessageBox.critical(
+                self, "Key error", "Key must be 32 hex chars or 16 ASCII chars"
+            )
             return
         try:
             encrypt_file(in_path, out_path, key)
@@ -76,9 +88,13 @@ class SecurityApp(QMainWindow):
         in_path = self.ui.txtInputFile.text()
         out_path = self.ui.txtOutputFile.text()
         if not in_path or not out_path:
-            QMessageBox.warning(self, "Missing file", "Please choose input and output files first.")
+            QMessageBox.warning(
+                self, "Missing file", "Please choose input and output files first."
+            )
             return
-        key_text, ok = QInputDialog.getText(self, "AES Key", "Enter 16-byte key (hex 32 chars) or 16-char ASCII:")
+        key_text, ok = QInputDialog.getText(
+            self, "AES Key", "Enter 16-byte key (hex 32 chars) or 16-char ASCII:"
+        )
         if not ok:
             return
         key = None
@@ -86,11 +102,13 @@ class SecurityApp(QMainWindow):
             if len(key_text) == 32:
                 key = binascii.unhexlify(key_text)
             elif len(key_text) == 16:
-                key = key_text.encode('utf-8')
+                key = key_text.encode("utf-8")
             else:
                 raise ValueError("Invalid key length")
         except Exception:
-            QMessageBox.critical(self, "Key error", "Key must be 32 hex chars or 16 ASCII chars")
+            QMessageBox.critical(
+                self, "Key error", "Key must be 32 hex chars or 16 ASCII chars"
+            )
             return
         try:
             decrypt_file(in_path, out_path, key)
