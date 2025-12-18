@@ -3,7 +3,7 @@ Uses AES-128 ECB mode with PKCS#7 padding. Operates in binary ('rb'/'wb').
 """
 
 from typing import List
-from .aes import aes_encrypt, aes_decrypt
+from aes import aes_encrypt, aes_decrypt
 
 
 def pkcs7_pad(data: bytes, block_size: int = 16) -> bytes:
