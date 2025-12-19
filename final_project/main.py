@@ -28,6 +28,7 @@ from rsa_io import (
     load_private_key,
     generate_and_save_keypair,
 )
+from des import des_encrypt, des_decrypt
 import binascii
 
 
@@ -106,6 +107,10 @@ class SecurityApp(QMainWindow):
         try:
             if self.algorithm == "AES":
                 self._encrypt_aes(in_path, out_path)
+            elif self.algorithm == "DES":
+                self._encrypt_des(in_path, out_path)
+            elif self.algorithm == "3DES":
+                self._encrypt_3des(in_path, out_path)
             else:  # RSA
                 self._encrypt_rsa(in_path, out_path)
         except Exception as e:
@@ -165,6 +170,10 @@ class SecurityApp(QMainWindow):
         try:
             if self.algorithm == "AES":
                 self._decrypt_aes(in_path, out_path)
+            elif self.algorithm == "DES":
+                self._decrypt_des(in_path, out_path)
+            elif self.algorithm == "3DES":
+                self._decrypt_3des(in_path, out_path)
             else:  # RSA
                 self._decrypt_rsa(in_path, out_path)
         except Exception as e:
@@ -209,6 +218,102 @@ class SecurityApp(QMainWindow):
             QMessageBox.information(self, "Done", f"RSA Decrypted: {out_path}")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"RSA decryption failed: {str(e)}")
+
+    def _encrypt_des(self, in_path, out_path):
+        """Encrypt using DES"""
+        key_text, ok = QInputDialog.getText(
+            self, "DES Key", "Enter 8-byte key (hex 16 chars) or 8-char ASCII:"
+        )
+        if not ok:
+            return
+
+        try:
+            # Convert key to bytes
+            if len(key_text) == 16:  # Hex format
+                key = binascii.unhexlify(key_text)
+            elif len(key_text) == 8:  # ASCII format
+                key = key_text.encode("utf-8")
+            else:
+                raise ValueError("Invalid key length")
+
+            # Read input file
+            with open(in_path, "rb") as f:
+                plaintext_bytes = f.read()
+
+            # Encrypt: DES works on 8-byte blocks
+            ciphertext = b""
+            for i in range(0, len(plaintext_bytes), 8):
+                block = plaintext_bytes[i : i + 8]
+                # Pad last block if necessary
+                if len(block) < 8:
+                    block = block + b"\x00" * (8 - len(block))
+
+                # Convert to integers and encrypt
+                pt_int = int.from_bytes(block, "big")
+                key_int = int.from_bytes(key, "big")
+                ct_int = des_encrypt(pt_int, key_int)
+                ciphertext += ct_int.to_bytes(8, "big")
+
+            # Write output file
+            with open(out_path, "wb") as f:
+                f.write(ciphertext)
+
+            QMessageBox.information(self, "Done", f"DES Encrypted: {out_path}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"DES encryption failed: {str(e)}")
+
+    def _decrypt_des(self, in_path, out_path):
+        """Decrypt using DES"""
+        key_text, ok = QInputDialog.getText(
+            self, "DES Key", "Enter 8-byte key (hex 16 chars) or 8-char ASCII:"
+        )
+        if not ok:
+            return
+
+        try:
+            # Convert key to bytes
+            if len(key_text) == 16:  # Hex format
+                key = binascii.unhexlify(key_text)
+            elif len(key_text) == 8:  # ASCII format
+                key = key_text.encode("utf-8")
+            else:
+                raise ValueError("Invalid key length")
+
+            # Read input file
+            with open(in_path, "rb") as f:
+                ciphertext_bytes = f.read()
+
+            # Decrypt: Process 8-byte blocks
+            plaintext = b""
+            for i in range(0, len(ciphertext_bytes), 8):
+                block = ciphertext_bytes[i : i + 8]
+                if len(block) < 8:
+                    break  # Skip incomplete blocks
+
+                # Convert to integers and decrypt
+                ct_int = int.from_bytes(block, "big")
+                key_int = int.from_bytes(key, "big")
+                pt_int = des_decrypt(ct_int, key_int)
+                plaintext += pt_int.to_bytes(8, "big")
+
+            # Remove trailing null padding
+            plaintext = plaintext.rstrip(b"\x00")
+
+            # Write output file
+            with open(out_path, "wb") as f:
+                f.write(plaintext)
+
+            QMessageBox.information(self, "Done", f"DES Decrypted: {out_path}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"DES decryption failed: {str(e)}")
+
+    def _encrypt_3des(self, in_path, out_path):
+        """Encrypt using 3DES (Triple DES)"""
+        QMessageBox.information(self, "3DES", "3DES coming soon!")
+
+    def _decrypt_3des(self, in_path, out_path):
+        """Decrypt using 3DES (Triple DES)"""
+        QMessageBox.information(self, "3DES", "3DES coming soon!")
 
     def set_algorithm(self, algo_name):
         """Set the current algorithm (AES or RSA)"""
