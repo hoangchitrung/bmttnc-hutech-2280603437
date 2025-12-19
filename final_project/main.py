@@ -29,6 +29,7 @@ from rsa_io import (
     generate_and_save_keypair,
 )
 from des import des_encrypt, des_decrypt
+from triple_des import triple_des_encrypt, triple_des_decrypt
 import binascii
 
 
@@ -309,11 +310,141 @@ class SecurityApp(QMainWindow):
 
     def _encrypt_3des(self, in_path, out_path):
         """Encrypt using 3DES (Triple DES)"""
-        QMessageBox.information(self, "3DES", "3DES coming soon!")
+        try:
+            # Ask for three 8-byte keys
+            key1_text, ok1 = QInputDialog.getText(
+                self, "3DES Key 1", "Enter Key 1 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok1:
+                return
+
+            key2_text, ok2 = QInputDialog.getText(
+                self, "3DES Key 2", "Enter Key 2 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok2:
+                return
+
+            key3_text, ok3 = QInputDialog.getText(
+                self, "3DES Key 3", "Enter Key 3 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok3:
+                return
+
+            # Convert keys from string to bytes
+            if len(key1_text) == 16:  # Hex format
+                key1 = bytes.fromhex(key1_text)
+            else:  # ASCII format
+                key1 = key1_text.encode("utf-8")[:8]
+                key1 += b"\x00" * (8 - len(key1))  # Pad if needed
+
+            if len(key2_text) == 16:  # Hex format
+                key2 = bytes.fromhex(key2_text)
+            else:  # ASCII format
+                key2 = key2_text.encode("utf-8")[:8]
+                key2 += b"\x00" * (8 - len(key2))  # Pad if needed
+
+            if len(key3_text) == 16:  # Hex format
+                key3 = bytes.fromhex(key3_text)
+            else:  # ASCII format
+                key3 = key3_text.encode("utf-8")[:8]
+                key3 += b"\x00" * (8 - len(key3))  # Pad if needed
+
+            # Read plaintext file in binary mode
+            with open(in_path, "rb") as f:
+                plaintext = f.read()
+
+            # Encrypt in 8-byte blocks with padding
+            ciphertext = b""
+            for i in range(0, len(plaintext), 8):
+                block = plaintext[i : i + 8]
+                # Pad with null bytes if block is incomplete
+                if len(block) < 8:
+                    block += b"\x00" * (8 - len(block))
+
+                # Convert block to int, encrypt, convert back to bytes
+                block_int = int.from_bytes(block, "big")
+                encrypted_int = triple_des_encrypt(block_int, key1, key2, key3)
+                encrypted_block = encrypted_int.to_bytes(8, "big")
+                ciphertext += encrypted_block
+
+            # Write ciphertext to output file
+            with open(out_path, "wb") as f:
+                f.write(ciphertext)
+
+            QMessageBox.information(
+                self, "Success", f"3DES encryption completed!\nOutput: {out_path}"
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"3DES encryption failed:\n{str(e)}")
 
     def _decrypt_3des(self, in_path, out_path):
         """Decrypt using 3DES (Triple DES)"""
-        QMessageBox.information(self, "3DES", "3DES coming soon!")
+        try:
+            # Ask for three 8-byte keys
+            key1_text, ok1 = QInputDialog.getText(
+                self, "3DES Key 1", "Enter Key 1 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok1:
+                return
+
+            key2_text, ok2 = QInputDialog.getText(
+                self, "3DES Key 2", "Enter Key 2 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok2:
+                return
+
+            key3_text, ok3 = QInputDialog.getText(
+                self, "3DES Key 3", "Enter Key 3 (8-byte hex 16 chars or 8-char ASCII):"
+            )
+            if not ok3:
+                return
+
+            # Convert keys from string to bytes
+            if len(key1_text) == 16:  # Hex format
+                key1 = bytes.fromhex(key1_text)
+            else:  # ASCII format
+                key1 = key1_text.encode("utf-8")[:8]
+                key1 += b"\x00" * (8 - len(key1))  # Pad if needed
+
+            if len(key2_text) == 16:  # Hex format
+                key2 = bytes.fromhex(key2_text)
+            else:  # ASCII format
+                key2 = key2_text.encode("utf-8")[:8]
+                key2 += b"\x00" * (8 - len(key2))  # Pad if needed
+
+            if len(key3_text) == 16:  # Hex format
+                key3 = bytes.fromhex(key3_text)
+            else:  # ASCII format
+                key3 = key3_text.encode("utf-8")[:8]
+                key3 += b"\x00" * (8 - len(key3))  # Pad if needed
+
+            # Read ciphertext file in binary mode
+            with open(in_path, "rb") as f:
+                ciphertext = f.read()
+
+            # Decrypt in 8-byte blocks
+            plaintext = b""
+            for i in range(0, len(ciphertext), 8):
+                block = ciphertext[i : i + 8]
+
+                # Convert block to int, decrypt, convert back to bytes
+                block_int = int.from_bytes(block, "big")
+                decrypted_int = triple_des_decrypt(block_int, key1, key2, key3)
+                decrypted_block = decrypted_int.to_bytes(8, "big")
+                plaintext += decrypted_block
+
+            # Remove trailing null bytes (padding)
+            plaintext = plaintext.rstrip(b"\x00")
+
+            # Write plaintext to output file
+            with open(out_path, "wb") as f:
+                f.write(plaintext)
+
+            QMessageBox.information(
+                self, "Success", f"3DES decryption completed!\nOutput: {out_path}"
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"3DES decryption failed:\n{str(e)}")
 
     def set_algorithm(self, algo_name):
         """Set the current algorithm (AES or RSA)"""
