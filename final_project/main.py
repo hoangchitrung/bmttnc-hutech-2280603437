@@ -9,9 +9,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLabel,
+    QPushButton,
 )
 from PyQt5.QtCore import Qt
 from ui.DecryptAndEncrypt import Ui_MainWindow
+from ui.rsa_key_dialog import RSAKeyDialog
 import sys
 import sys
 
@@ -64,6 +66,12 @@ class SecurityApp(QMainWindow):
         self.ui.btnSaveAs.clicked.connect(self.save_as)
         self.ui.btnEncrypt.clicked.connect(self.encrypt_file)
         self.ui.btnDecrypt.clicked.connect(self.decrypt_file)
+
+        # Connect Generate RSA Key button
+        if hasattr(self.ui, "btnGenRSA"):
+            self.ui.btnGenRSA.clicked.connect(self.generate_rsa_keypair)
+
+        self.statusBar().showMessage("Ready")
 
     def on_algorithm_selected(self, algo_name, checked):
         """Called when a radio button is selected"""
@@ -445,6 +453,55 @@ class SecurityApp(QMainWindow):
             )
         except Exception as e:
             QMessageBox.critical(self, "Error", f"3DES decryption failed:\n{str(e)}")
+
+    def generate_rsa_keypair(self):
+        """Open dialog to generate RSA keypair"""
+        try:
+            dialog = RSAKeyDialog(self)
+            if dialog.exec_() == dialog.Accepted:
+                key_size, description = dialog.get_values()
+
+                # Ask where to save keys
+                save_dir = QFileDialog.getExistingDirectory(
+                    self, "Select folder to save RSA keys"
+                )
+
+                if save_dir:
+                    # Create file paths for public and private keys
+                    public_key_file = os.path.join(
+                        save_dir, f"rsa_{description}_public.json"
+                    )
+                    private_key_file = os.path.join(
+                        save_dir, f"rsa_{description}_private.json"
+                    )
+
+                    # Show progress message (key generation can take a while)
+                    QMessageBox.information(
+                        self,
+                        "Generating Keys",
+                        f"Generating {key_size}-bit RSA keys...\n\n"
+                        f"This may take a few moments depending on key size.\n"
+                        f"Please wait...",
+                    )
+
+                    # Generate keypair (key_size is already int from dialog)
+                    public_key, private_key = generate_and_save_keypair(
+                        public_key_file, private_key_file, bit_length=key_size
+                    )
+
+                    QMessageBox.information(
+                        self,
+                        "Success",
+                        f"RSA Key Generated!\n\n"
+                        f"Key Size: {key_size} bits\n"
+                        f"Description: {description}\n"
+                        f"Public Key: {public_key_file}\n"
+                        f"Private Key: {private_key_file}",
+                    )
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Error", f"Failed to generate RSA keys:\n{str(e)}"
+            )
 
     def set_algorithm(self, algo_name):
         """Set the current algorithm (AES or RSA)"""

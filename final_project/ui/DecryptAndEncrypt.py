@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './ui/DecryptAndEncrypt.ui'
+# Form implementation generated from reading ui file 'DecryptAndEncrypt.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -63,6 +63,9 @@ class Ui_MainWindow(object):
         self.btnDecrypt = QtWidgets.QPushButton(self.centralwidget)
         self.btnDecrypt.setGeometry(QtCore.QRect(310, 210, 93, 32))
         self.btnDecrypt.setObjectName("btnDecrypt")
+        self.btnGenRSA = QtWidgets.QPushButton(self.centralwidget)
+        self.btnGenRSA.setGeometry(QtCore.QRect(450, 210, 93, 32))
+        self.btnGenRSA.setObjectName("btnGenRSA")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -86,13 +89,4 @@ class Ui_MainWindow(object):
         self.btnSaveAs.setText(_translate("MainWindow", "💾 Save as"))
         self.btnEncrypt.setText(_translate("MainWindow", "🔒Encrypt"))
         self.btnDecrypt.setText(_translate("MainWindow", "🔓Decrypt"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+        self.btnGenRSA.setText(_translate("MainWindow", "🔑Gen RSA"))
