@@ -32,12 +32,6 @@
    - ShiftRows
    - AddRoundKey
 
-**Chi tiết cài đặt:**
-- Code: 1,183 dòng
-- S-box chuẩn: 256 giá trị
-- Key expansion: Từ khóa gốc tạo 11 khóa vòng
-- Tất cả xử lý byte-level
-
 ### DES (Data Encryption Standard)
 
 **Nguyên lý:**
@@ -57,12 +51,6 @@
 
 **Giải mã:**
 - Sử dụng cùng quá trình nhưng subkeys theo thứ tự ngược lại
-
-**Chi tiết cài đặt:**
-- Code: 500 dòng
-- 8 S-boxes riêng biệt
-- Permutation tables: IP, FP, E, P, PC1, PC2
-- Key schedule tạo 16 subkeys
 
 ### 3DES (Triple DES)
 
@@ -97,11 +85,6 @@ Plaintext
 - 168 bits key khó bị brute force hơn 56 bits
 - Tương thích với DES nếu K1 = K2 = K3
 
-**Chi tiết cài đặt:**
-- Code: 109 dòng
-- Tận dụng DES 3 lần
-- Hỗ trợ 3 khóa độc lập
-
 ### RSA (Rivest-Shamir-Adleman)
 
 **Nguyên lý:**
@@ -132,13 +115,6 @@ Plaintext = Ciphertext^d mod n
 - e và n công khai, nhưng tính d cần biết p và q
 - Phân tích n = p × q rất khó khi p, q là số nguyên tố lớn
 - Độ khó tăng theo kích thước bit (512, 1024, 2048 bits)
-
-**Chi tiết cài đặt:**
-- Code: 349 dòng
-- Miller-Rabin: Kiểm tra tính nguyên tố
-- Extended Euclidean: Tính d từ e
-- Modular exponentiation: Tính M^e mod n hiệu quả
-- Key storage: JSON format
 
 ---
 
